@@ -1,0 +1,312 @@
+:root{
+    /* colors */
+    --back-color: #8484B3;
+
+    --color-List: #FFFFFF;
+    --color-List-1: #73FFD6;
+    --color-List-1-b: linear-gradient(to bottom, #73FFD6 0%, #ffffFF 100%);
+    --color-List-2: #9FC1FF;
+    --color-List-2-b: linear-gradient(to bottom, #9FC1FF 0%, #ffffFF 100%);
+    --color-List-3: #ACC0E9;
+    --color-List-3-b: linear-gradient(to bottom, #ACC0E9 0%, #ffffFF 100%);
+    --color-List-4: #9AD9FF;
+    --color-List-4-b: linear-gradient(to bottom, #9AD9FF 0%, #ffffFF 100%);
+    --color-List-5: #A4D0E7;
+    --color-List-5-b: linear-gradient(to bottom, #A4D0E7 0%, #ffffFF 100%);
+    --color-List-6: #FFC6E3;
+    --color-List-6-b: linear-gradient(to bottom, #FFC6E3 0%, #ffffFF 100%);
+    --color-List-7: #FFD7AE;
+    --color-List-7-b: linear-gradient(to bottom, #FFD7AE 0%, #ffffFF 100%);
+    --color-List-8: #FF97A3;
+    --color-List-8-b: linear-gradient(to bottom, #FF97A3 0%, #ffffFF 100%);
+
+    --color-hover-icons: #000000;
+    --color-icons: #797979;
+
+    /* sizes */
+    --box-width: 50%;
+    --box-max-width: 400px;
+    --box-height: 80vh;
+    --box-max-height: 600px;
+
+    --icons-size: 2.5rem;
+
+    --img-size: 35%;
+    --img-min-size: 120px;
+    --img-max-size: 150px;
+
+    --rule-size: 30px;
+
+    /* position */
+    --rule-top: 10px;
+    --rule-left: 10px;
+
+    --img-top: 15%;
+    --img-left: 50%;
+
+    --appointment-top-defalt: -250%;
+    --appointment-top: -100%;
+    --inside-top-defalt: 0px;
+    --inside-top: -100%;
+
+    /* radius */
+    --radius: 20px;
+
+    /* smooth */
+    --smooth: 0.5s;
+    --smooth-more: 2s;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: 'Great Vibes', cursive;
+    background-color: var(--back-color);
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.box{
+    position: relative;
+    max-width: var(--box-max-width);
+    max-height: var(--box-max-height);
+    width: var(--box-width);
+    height: var(--box-height);
+    background-color: var(--color-List);
+
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.rule{
+    cursor: pointer;
+    z-index: 100;
+    position: absolute;
+    width: var(--rule-size);
+    height: auto;
+    top: var(--rule-top);
+    left: var(--rule-left);
+}
+
+.inside{
+    position: relative;
+    top: var(--inside-top-defalt);
+    transition: all var(--smooth-more) ease;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: 30% 20% 20% 30%;
+}
+.inside .color{
+    animation: fadeIn 1s ease-out;
+    transition: background-color var(--smooth) ease;
+    background-color: var(--color-List-1);
+}
+
+.inside .name{
+    animation: fadeInUp 1s ease-out;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+}
+
+.inside .descreption{
+    animation: fadeIn 1s ease-out;
+    display: flex;
+    justify-content: center;
+
+}
+
+.inside .icon:hover svg{
+    color: var(--color-hover-icons);
+    cursor: pointer;
+    width: calc(var(--icons-size) + 10px);
+    height: calc(var(--icons-size) + 10px);
+}
+.inside .icon svg{
+    transition: all var(--smooth) ease;
+    width: var(--icons-size);
+    height: var(--icons-size);
+    animation: fadeInUp 1s ease-out;
+}
+.inside .icons{
+    color: var(--color-icons);
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.user-image{
+    filter: drop-shadow(0 0 5px #3498db);
+    object-fit: cover;
+    position: absolute;
+    width: var(--img-size);
+    min-width: var(--img-min-size);
+    max-width: var(--img-max-size);
+    height: auto;
+    top: var(--img-top);
+    left: var(--img-left);
+    transform: translate(-50%, 0);
+    transition: all calc(var(--smooth-more) + .2s) ease;
+}
+
+.add{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: 70% 30%;
+    transition: all var(--smooth-more) ease;
+    position: relative;
+    top: -50%;
+}
+
+.appointments{
+    width: 100%;
+    height: 100%;
+    background: var(--color-List-1-b);
+    transition: all var(--smooth-more) ease;
+    position: relative;
+    top: var(--appointment-top-defalt);
+    display: grid;
+    grid-template-rows: 70% 30%;
+}
+
+.buttons{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.buttons svg{
+    cursor: pointer;
+    width: 40%;
+    height: 40%;
+}
+
+.menu{
+    margin-top: 10%;
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
+}
+.menu .titleMenu, .menu .details{
+    text-align: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    opacity: 0;
+    transform: translateY(30px);
+    animation: slideIn 0.8s ease forwards;
+}
+
+.menu .details:focus{
+    border: #000000 solid 3px;
+
+}
+
+.calendar{
+    margin: 10% 1% 0 1%;
+}
+.calendarDay{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 2px;
+}
+.day{
+    width: 100%;
+    height: 100%;
+    border: 1px solid #000000;
+    border-radius: 10px;
+    transition: all var(--smooth) ease;
+}
+
+.inps{
+    padding: 10px;
+    width: 100%;
+    height: 100%;
+    max-width: 400px;
+    animation: fadeInUp 1s ease-out;
+    overflow: scroll;
+}
+.input-group {
+    margin-bottom: 15px;
+    animation: slideIn 0.8s ease forwards;
+    opacity: 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+input:focus, select:focus {
+    border-color: #74ebd5;
+    outline: none;
+}
+.forma, .setDate{
+    margin-top: 10%;
+}
+
+@media (min-height: 660px){
+    :root{
+        --box-height: 80vh;
+        --box-max-height: 600px;
+    }
+}
+
+@media (max-width: 600px){
+    :root{
+        --box-width: 90%;
+        --box-max-width: 100%;
+        --box-height: 90vh;
+        --box-max-height: 90vh;
+        --img-size: 50%;
+        --img-min-size: 150px;
+        --img-max-size: 200px;
+    }
+    .inside{
+        grid-template-rows: repeat(4, 25%);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+}
