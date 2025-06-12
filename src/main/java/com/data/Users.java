@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import static java.lang.System.out;
 
 public class Users {
-    String username, name, surname;
+    String username, name, surname, role;
     int password, usersCounter;
 
     String dbName = "hospital";
@@ -20,6 +20,12 @@ public class Users {
 
     public Users(){}
 
+    public Users(String name, String surname, String role){
+        setName(name);
+        setSurname(surname);
+        setRole(role);
+    }
+
     public Users(String username, int password, String name, String surname) {
         setUsername(username);
         setPassword(password);
@@ -31,6 +37,11 @@ public class Users {
     public int getPassword() {return password;}
     public String getName() {return name;}
     public String getSurname() {return surname;}
+    public String getRole() {return role;}
+    public String getFullName() {
+        String fullname = getSurname() + " " + getName();
+        return fullname;
+    }
 
     public void setUsername(String username) {
         try {
@@ -56,6 +67,14 @@ public class Users {
     public void setSurname(String surname) {
         try {
             this.surname = surname;
+        }catch(Exception e){
+            out.println(e.getMessage());
+        }
+    }
+
+    public void setRole(String role) {
+        try {
+            this.role = role;
         }catch(Exception e){
             out.println(e.getMessage());
         }
@@ -87,8 +106,6 @@ public class Users {
                     session.setAttribute("hash", storedHash);
                     session.setAttribute("salt", saltBase);
                     session.setAttribute("table", table);
-
-                    out.println("<h2>" + storedHash + "<br>" + saltBase + "</h2>");
                 }
                 i++;
             } while ((i < tables.length) && (!check));
@@ -96,7 +113,7 @@ public class Users {
                 out.println("Ο χρήστης δεν βρέθηκε");
             }
         } catch (Exception e) {
-            out.println("<h2>Error: " + e.getMessage() + "</h2>");
+            System.out.println("Error: " + e.getMessage());
         } finally {
             out.close();
         }
@@ -212,7 +229,7 @@ public class Users {
         return appointments;
     }
 
-    public void logout(){
-
+    public static void logout(HttpSession session) {
+        if (session != null) {session.invalidate();}
     }
 }

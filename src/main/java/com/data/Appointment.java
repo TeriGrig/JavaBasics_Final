@@ -103,25 +103,25 @@ public class Appointment {
                 pat_info = p.surname + " " + p.name;
             }
         }
-        String day = getDay(date);
+        String day = getDay();
         return String.format("Appointment details: Doctor: %s, Patient: %s, Date: %s, Time: %s", doc_info, pat_info, day, time);
     }
 
-    public String getDay(char c){
+    public String getDay(){
         String day = null;
-        if (c == 'M'){
+        if (date == 'M'){
             day = "Monday";
-        }else if (c == 'T'){
+        }else if (date == 'T'){
             day = "Tuesday";
-        }else if (c == 'W'){
+        }else if (date == 'W'){
             day = "Wednesday";
-        }else if (c == 'R'){
+        }else if (date == 'R'){
             day = "Thursday";
-        }else if (c == 'F'){
+        }else if (date == 'F'){
             day = "Friday";
-        }else if (c == 'S'){
+        }else if (date == 'S'){
             day = "Saturday";
-        }else if (c == 'N'){
+        }else if (date == 'N'){
             day = "Sunday";
         }
         return day;
@@ -140,5 +140,20 @@ public class Appointment {
             }
         }
         return doc_info;
+    }
+
+    public String getPatinfo(){
+        Admin a = new Admin();
+        Patient p = null;
+        String pat_info = "Unknown";
+        String s = "SELECT * FROM patients WHERE id = " + patient_id;
+        ArrayList<Patient> patients = a.selectPatientFromDb(s);
+        if (!patients.isEmpty()) {
+            p = patients.get(0);
+            if (p != null) {
+                pat_info = p.surname + " " + p.name;
+            }
+        }
+        return pat_info;
     }
 }

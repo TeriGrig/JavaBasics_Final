@@ -23,7 +23,6 @@ details.forEach((el, index) => {
     el.style.animationDelay = `${index * 0.2}s`;
 });
 
-
 days.forEach(day => {
     day.addEventListener('click', () => {
         if (day.style.backgroundColor === 'green') {

@@ -73,6 +73,20 @@ body{
     align-items: center;
 }
 
+.verify{
+    position: fixed;
+    top: 0;
+    left: 50%;
+    z-index: 1000;
+    transition: all var(--smooth-more) ease;
+    animation: hide 4s forwards;
+
+}
+.verify img{
+    width: 20%;
+    height: auto;
+}
+
 .box{
     position: relative;
     max-width: var(--box-max-width);
@@ -191,24 +205,29 @@ body{
     height: 40%;
 }
 
-.menu{
+.menu, .menuAdmin{
     margin-top: 10%;
     width: 100%;
     height: 100%;
     overflow: scroll;
+    overflow-x: hidden;
 }
-.menu .titleMenu, .menu .details{
-    text-align: center;
+.titleMenu, .details{
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    text-align: center;
     opacity: 0;
     transform: translateY(30px);
     animation: slideIn 0.8s ease forwards;
 }
-
-.menu .details:focus{
+.menuAdmin .titleMenu, .menuAdmin .details{
+    grid-template-columns: repeat(2, 1fr);
+}
+.menuAdmin .details h3{
+    font-size: 90%;
+}
+.details:focus{
     border: #000000 solid 3px;
-
 }
 
 .calendar{
@@ -237,6 +256,7 @@ body{
     max-width: 400px;
     animation: fadeInUp 1s ease-out;
     overflow: scroll;
+    overflow-x: hidden;
 }
 .input-group {
     margin-bottom: 15px;
@@ -313,4 +333,8 @@ input:focus, select:focus {
         opacity: 0;
         transform: translateY(30px);
     }
+}
+
+@keyframes hide {
+    to { display: none; opacity: 0; }
 }

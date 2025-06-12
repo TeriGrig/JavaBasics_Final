@@ -1,21 +1,48 @@
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="com.data.Appointment" %>
+<%@ page import="com.data.Users" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%--<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>--%>
+<%@ page import="com.data.Users" %>
+<%@ page import="com.data.Appointment" %>
 
 <%
-    String username = (String) session.getAttribute("username");
-    String name = (String) session.getAttribute("name");
-    String surname = (String) session.getAttribute("surname");
-    String doc_fullname = (String) session.getAttribute("doc");
-    String day = (String) session.getAttribute("day");
-    String time = (String) session.getAttribute("time");
-    String category = (String) session.getAttribute("table");
+    String category = null;
+    String username = null;
+    String surname = null;
+    String name = null;
     String speciality = null;
     int AMKA = 0;
-    if (category.equals("doctors")) {
-        speciality = (String) session.getAttribute("speciality");
-    }
-    else if (category.equals("patients")){
-        AMKA = (int) session.getAttribute("AMKA");
+    ArrayList<Appointment> appointments = null;
+    ArrayList<Users> users = null;
+    Users user = (Users) session.getAttribute("current_user");
+    if (session != null) {
+        username = (String) session.getAttribute("username");
+        name = (String) session.getAttribute("name");
+        surname = (String) session.getAttribute("surname");
+        category = (String) session.getAttribute("table");
+        if (category != null) {
+            if (category.equals("doctors")) {
+                speciality = (String) session.getAttribute("speciality");
+            }
+            if (category.equals("patients")) {
+                AMKA = (int) session.getAttribute("AMKA");
+            }
+            if (category.equals("doctors") || category.equals("patients")) {
+                appointments = (ArrayList<Appointment>) session.getAttribute("appointments");
+                if (appointments == null){
+                    appointments = new ArrayList<>();
+                }
+            }
+            if (category.equals("admins")) {
+                users = (ArrayList<Users>) session.getAttribute("users");
+                if (users == null){
+                    users = new ArrayList<>();
+                }
+            }
+
+        }
+    } else {
+        System.out.println("Session is null");
     }
 %>
 
@@ -24,25 +51,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="info/style.css">
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/info/style.css">
     <title>List</title>
 </head>
 <body>
 <div class="box">
-    <a href="index.jsp">
+    <form method="POST" action="logout" id="logout">
         <% if (category.equals("doctors")) {%>
-        <img src="info/imgs/doctors.svg" alt="rule" class="rule">
+        <img src="<%=request.getContextPath()%>/info/imgs/doctors.svg" alt="rule" class="rule" onclick="document.getElementById('logout').submit()">
         <%} else if (category.equals("patients")) {%>
-        <img src="info/imgs/patients.svg" alt="rule" class="rule">
+        <img src="<%=request.getContextPath()%>/info/imgs/patients.svg" alt="rule" class="rule" onclick="document.getElementById('logout').submit()">
         <%} else if (category.equals("admins")) {%>
-        <img src="info/imgs/admins.svg" alt="rule" class="rule">
+        <img src="<%=request.getContextPath()%>/info/imgs/admins.svg" alt="rule" class="rule" onclick="document.getElementById('logout').submit()">
         <%}%>
-    </a>
+    </form>
 
     <div class="inside" id="inside">
         <div id="color" class="color"></div>
-        <div class="name"><h1><%= username%></h1></div>
-        <div class="descreption"><p>SURNAME: <%= surname%><br>NAME: <%= name%>
+        <div class="name"><h1><%=username%></h1></div>
+        <div class="descreption"><p>SURNAME: <%=surname%><br>NAME: <%=name%>
             <%if (category.equals("doctors")) {%>
             <br>SPECIALITY: <%=speciality%><br>
             <%} else if (category.equals("patients")) {%>
@@ -53,11 +80,11 @@
         <div class="icons">
             <div class="icon" onclick="addFunc()" title="Add to appointments">
                 <%
-                    if (category.equals("doctors") || category.equals("patients")){%>
+                    if (category.equals("doctors") || category.equals("patients")) {%>
                 <svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <path fill-rule="evenodd" d="m 6.5 0 c -3.578125 0 -6.5 2.921875 -6.5 6.5 s 2.921875 6.5 6.5 6.5 c 0.167969 0 0.335938 -0.007812 0.5 -0.019531 v -2.007813 c -0.164062 0.019532 -0.332031 0.027344 -0.5 0.027344 c -2.496094 0 -4.5 -2.003906 -4.5 -4.5 s 2.003906 -4.5 4.5 -4.5 s 4.5 2.003906 4.5 4.5 c 0 0.167969 -0.007812 0.335938 -0.027344 0.5 h 2.007813 c 0.011719 -0.164062 0.019531 -0.332031 0.019531 -0.5 c 0 -3.578125 -2.921875 -6.5 -6.5 -6.5 z m 0 3 c -0.277344 0 -0.5 0.222656 -0.5 0.5 v 2.5 h -1.5 c -0.277344 0 -0.5 0.222656 -0.5 0.5 s 0.222656 0.5 0.5 0.5 h 2 c 0.277344 0 0.5 -0.222656 0.5 -0.5 v -3 c 0 -0.277344 -0.222656 -0.5 -0.5 -0.5 z m 4.5 5 v 3 h -3 v 2 h 3 v 3 h 2 v -3 h 3 v -2 h -3 v -3 z m 0 0"/>
                 </svg>
-                <% } else if (category.equals("admins")){%>
+                <% } else if (category.equals("admins")) {%>
                 <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve"><g><g><path d="M300.434,257.599c-25.945,27.304-60.622,43.875-98.602,43.875c-37.979,0-72.656-16.571-98.602-43.875c-45.617,28.738-77.826,76.818-85.092,132.736c-1.659,12.77,8.291,24.107,21.201,24.107h225.846c0-53.371,32.011-99.402,77.838-119.914C330.812,280.165,316.452,267.69,300.434,257.599z"/></g></g><g><g><ellipse cx="201.828" cy="133.868" rx="112.229" ry="133.868"/></g></g><g><g><path d="M396.486,316.885c-53.794,0-97.558,43.764-97.558,97.558S342.693,512,396.486,512c53.792,0,97.557-43.764,97.557-97.558S450.279,316.885,396.486,316.885z M435.199,431.315h-21.841v21.841c0,9.318-7.554,16.872-16.872,16.872c-9.318,0-16.872-7.554-16.872-16.872v-21.841h-21.842c-9.318,0-16.872-7.554-16.872-16.872c0-9.319,7.554-16.872,16.872-16.872h21.842v-21.841c0-9.318,7.554-16.872,16.872-16.872c9.318,0,16.872,7.554,16.872,16.872v21.841h21.841c9.318,0,16.872,7.554,16.872,16.872C452.072,423.761,444.518,431.315,435.199,431.315z"/></g></g>
                         </svg>
                 <% }
@@ -72,11 +99,11 @@
             </div>
             <div class="icon" onclick="openApp()">
                 <%
-                    if (category.equals("doctors") || category.equals("patients")){%>
+                    if (category.equals("doctors") || category.equals("patients")) {%>
                 <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
                     <path fill-rule="evenodd" d="M6 0L5 .25V1h1zm0 1v1H5V1h-.006c-1.259.014-2.18-.03-2.932.384-.376.208-.675.56-.84.999C1.058 2.821 1 3.343 1 4v8c0 .657.058 1.178.222 1.617.165.439.464.788.84.996.753.415 1.674.372 2.932.387h6.012c1.258-.015 2.178.028 2.931-.387a1.87 1.87 0 0 0 .838-.996c.165-.439.225-.99.225-1.617V4c0-.658-.06-1.179-.225-1.617a1.88 1.88 0 0 0-.838-.998c-.753-.416-1.673-.37-2.931-.385H11v1h-1V1zm4 0h1V0l-1 .25zM5.006 5H11c1.26.014 2.087.06 2.453.261.183.102.289.213.386.473.098.26.16 1.266.16 1.266v5c0 .592-.062 1.005-.16 1.265-.097.26-.203.372-.386.473-.366.202-1.194.247-2.453.262H5c-1.26-.015-2.087-.06-2.454-.262-.183-.101-.289-.213-.386-.473C2.062 13.005 2 12.592 2 12V7c0-.593.062-1.006.16-1.266.097-.26.203-.371.386-.473.367-.202 1.196-.247 2.46-.261z" overflow="visible"  white-space="normal"/>
                 </svg>
-                <% } else if (category.equals("admins")){%>
+                <% } else if (category.equals("admins")) {%>
                 <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg"xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" space="preserve"><g><g><path d="M300.435,257.599c-25.944,27.303-60.62,43.876-98.602,43.876c-37.976,0-72.654-16.568-98.602-43.876c-45.617,28.739-77.825,76.818-85.092,132.735c-1.659,12.77,8.291,24.108,21.201,24.108h225.844c0.001-53.371,32.012-99.402,77.841-119.914C330.813,280.165,316.452,267.69,300.435,257.599z"/></g></g><g><g><ellipse cx="201.835" cy="133.862" rx="112.233" ry="133.862"/></g></g><g><g><path d="M396.486,316.885c-53.794,0-97.557,43.764-97.557,97.557S342.692,512,396.486,512s97.557-43.764,97.557-97.557S450.279,316.885,396.486,316.885zM435.199,431.315h-77.427c-9.318,0-16.872-7.554-16.872-16.872c0-9.318,7.554-16.872,16.872-16.872h77.427c9.318,0,16.872,7.554,16.872,16.872C452.071,423.761,444.518,431.315,435.199,431.315z"/></g></g>
                 </svg>
                 <% }
@@ -86,25 +113,46 @@
         </div>
     </div>
     <div class="appointments" id="appointments">
-        <div class="menu">
-            <div class="titleMenu">
-                <!-- Patient -->
-                <!-- <h1>Doctor</h1> -->
-                <!-- Doctor -->
-                <h1>Patient</h1>
-                <h1>Date</h1>
-                <h1>Time</h1>
-            </div>
-            <div class="menuDetails">
-                <!-- first -->
-                <div class="details" tabindex="-1">
-                    <h2><%= doc_fullname%></h2>
-                    <h2><%= day%></h2>
-                    <h2><%= time%></h2>
+        <%if (category.equals("doctors") || category.equals("patients")) {%>
+            <div class="menu">
+                <div class="titleMenu">
+                    <h1>Patient</h1>
+                    <h1>Date</h1>
+                    <h1>Time</h1>
                 </div>
-                <!---------------- -->
+                <div class="menuDetails">
+                    <%for (Appointment ap : appointments) {%>
+                    <div class="details" tabindex="-1">
+                        <%if (category.equals("patients")) {%>
+                            <h2><%=ap.getPatinfo()%></h2>
+                        <%}%>
+                        <%if (category.equals("doctors")) {%>
+                        <h2><%=ap.getDocinfo()%></h2>
+                        <%}%>
+                        <h2><%=ap.getDay()%></h2>
+                        <h2><%=ap.getTime()%></h2>
+                    </div>
+                    <%}%>
+                </div>
             </div>
-        </div>
+        <%}%>
+        <%if (category.equals("admins")) {%>
+            <div class="menuAdmin">
+                <div class="titleMenu">
+                    <h1>User</h1>
+                    <h1>Role</h1>
+                </div>
+                <div class="menuDetails">
+                    <%for (Users u : users) {%>
+                    <div class="details" tabindex="-1">
+                        <h3><%=u.getFullName()%></h3>
+                        <h3><%=u.getRole()%></h3>
+                    </div>
+                    <%}%>
+                    <!---------------- -->
+                </div>
+            </div>
+        <%}%>
         <div class="buttons">
             <svg onclick="closeApp()" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM13.92 16.13H9C8.59 16.13 8.25 15.79 8.25 15.38C8.25 14.97 8.59 14.63 9 14.63H13.92C15.2 14.63 16.25 13.59 16.25 12.3C16.25 11.01 15.21 9.97 13.92 9.97H8.85L9.11 10.23C9.4 10.53 9.4 11 9.1 11.3C8.95 11.45 8.76 11.52 8.57 11.52C8.38 11.52 8.19 11.45 8.04 11.3L6.47 9.72C6.18 9.43 6.18 8.95 6.47 8.66L8.04 7.09C8.33 6.8 8.81 6.8 9.1 7.09C9.39 7.38 9.39 7.86 9.1 8.15L8.77 8.48H13.92C16.03 8.48 17.75 10.2 17.75 12.31C17.75 14.42 16.03 16.13 13.92 16.13Z" fill="#292D32"/>
@@ -117,7 +165,7 @@
     <div class="add" id="add">
         <%
             //        Doctor
-            if (category.equals("doctors")){%>
+            if (category.equals("doctors")) {%>
         <div class="calendar">
             <div class="titleCalendar">
                 <h1>September</h1>
@@ -132,8 +180,8 @@
                         String dayName = days[dayIndex % 7]; // Επαναφορά μετά την Κυριακή
                 %>
                 <div class="day">
-                    <h2><%= dayName %> </h2>
-                    <h3> <%= dayNumber %> </h3>
+                    <h2><%=dayName%> </h2>
+                    <h3> <%=dayNumber%> </h3>
                 </div>
                 <%
                         dayNumber++;
@@ -144,11 +192,10 @@
         %>
         <!-- Admin -->
         <%
-            if (category.equals("admins")){%>
-        <div class="forma">
+            if (category.equals("admins")) {%>
+        <form method="Post" action="AddUser" class="forma" id="addUser">
             <h1>Add user</h1>
             <div class="inps">
-
                 <div class="input-group">
                     <label for="name">Name</label>
                     <input type="text" id="name" name="name" required>
@@ -171,7 +218,7 @@
 
                 <div class="input-group">
                     <label for="property">Property</label>
-                    <select name="property" id="property" onchange = "showOptions()">
+                    <select name="property" id="property" onchange = "showOptions()" required>
                         <option value="">--Select--</option>
                         <option value="Doctor">Doctor</option>
                         <option value="Patient">Patient</option>
@@ -185,8 +232,7 @@
 
                 <div class="input-group hidden" id = "doctor-options">
                     <label for="speciality">Speciality</label>
-<%--                    <input type="text" id="speciality" name="speciality" required>--%>
-                    <select name="doctor-type" id="doctor-type">
+                    <select name="doctor-type" id="doctor-type" required>
                         <option value="">-- Select Speciality --</option>
                         <option value="dentist">Dentist</option>
                         <option value="pathologist">Pathologist</option>
@@ -203,11 +249,11 @@
                 </div>
 
             </div>
-        </div>
+        </form>
         <% }
 
 //        Patient
-        else if (category.equals("patients")){%>
+        else if (category.equals("patients")) {%>
         <div class="setDate">
             <h1>Set Doctor Date</h1>
             <div class="form">
@@ -231,7 +277,7 @@
                     <option value="">-- Ημέρα --</option>
                     <% int dayNumber = 1;
                         while (dayNumber <= 31) {%>
-                    <option value="01"><%= dayNumber%></option>
+                    <option value="01"><%=dayNumber%></option>
                     <% dayNumber++;
                     }%>
                 </select>
@@ -239,8 +285,8 @@
                 <select name="hour" id="hour">
                     <option value="">-- Ώρα --</option>
                     <% int hour = 9;
-                        while (hour <= 18){%>
-                    <option value="09:00"><%= hour%>:00</option>
+                        while (hour <= 18) {%>
+                    <option value="09:00"><%=hour%>:00</option>
                     <% hour++;
                     }%>
                 </select>
@@ -251,13 +297,25 @@
             <svg onclick="closeAdd()" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM13.92 16.13H9C8.59 16.13 8.25 15.79 8.25 15.38C8.25 14.97 8.59 14.63 9 14.63H13.92C15.2 14.63 16.25 13.59 16.25 12.3C16.25 11.01 15.21 9.97 13.92 9.97H8.85L9.11 10.23C9.4 10.53 9.4 11 9.1 11.3C8.95 11.45 8.76 11.52 8.57 11.52C8.38 11.52 8.19 11.45 8.04 11.3L6.47 9.72C6.18 9.43 6.18 8.95 6.47 8.66L8.04 7.09C8.33 6.8 8.81 6.8 9.1 7.09C9.39 7.38 9.39 7.86 9.1 8.15L8.77 8.48H13.92C16.03 8.48 17.75 10.2 17.75 12.31C17.75 14.42 16.03 16.13 13.92 16.13Z" fill="#292D32"/>
             </svg>
-            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#04009a;}.cls-2{fill:#77acf1;}</style></defs><g data-name="13. Floppy Disk" id="_13._Floppy_Disk"><path class="cls-1" d="M27,32H25a1,1,0,0,1,0-2h2a1,1,0,0,0,1-1V7.829a1,1,0,0,0-.293-.708L22.879,2.293A1.009,1.009,0,0,0,22.172,2H5A1,1,0,0,0,4,3V14a1,1,0,0,1-2,0V3A3,3,0,0,1,5,0H22.172a2.978,2.978,0,0,1,2.121.879l4.828,4.828A2.983,2.983,0,0,1,30,7.829V29A3,3,0,0,1,27,32Z"/><path class="cls-1" d="M21,32H5a3,3,0,0,1-3-3V18a1,1,0,0,1,2,0V29a1,1,0,0,0,1,1H21a1,1,0,0,1,0,2Z"/><path class="cls-1" d="M19,10H9A3,3,0,0,1,6,7V1A1,1,0,0,1,7,0H21a1,1,0,0,1,1,1V7A3,3,0,0,1,19,10ZM8,2V7A1,1,0,0,0,9,8H19a1,1,0,0,0,1-1V2Z"/><path class="cls-1" d="M21,32H7a1,1,0,0,1-1-1V21a3,3,0,0,1,3-3H19a3,3,0,0,1,3,3V31A1,1,0,0,1,21,32ZM8,30H20V21a1,1,0,0,0-1-1H9a1,1,0,0,0-1,1Z"/><path class="cls-2" d="M17,6H16a1,1,0,0,1,0-2h1a1,1,0,0,1,0,2Z"/><path class="cls-2" d="M17,24H11a1,1,0,0,1,0-2h6a1,1,0,0,1,0,2Z"/><path class="cls-2" d="M17,28H11a1,1,0,0,1,0-2h6a1,1,0,0,1,0,2Z"/></g>
+            <svg onclick="document.getElementById('addUser').submit()" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#04009a;}.cls-2{fill:#77acf1;}</style></defs><g data-name="13. Floppy Disk" id="_13._Floppy_Disk"><path class="cls-1" d="M27,32H25a1,1,0,0,1,0-2h2a1,1,0,0,0,1-1V7.829a1,1,0,0,0-.293-.708L22.879,2.293A1.009,1.009,0,0,0,22.172,2H5A1,1,0,0,0,4,3V14a1,1,0,0,1-2,0V3A3,3,0,0,1,5,0H22.172a2.978,2.978,0,0,1,2.121.879l4.828,4.828A2.983,2.983,0,0,1,30,7.829V29A3,3,0,0,1,27,32Z"/><path class="cls-1" d="M21,32H5a3,3,0,0,1-3-3V18a1,1,0,0,1,2,0V29a1,1,0,0,0,1,1H21a1,1,0,0,1,0,2Z"/><path class="cls-1" d="M19,10H9A3,3,0,0,1,6,7V1A1,1,0,0,1,7,0H21a1,1,0,0,1,1,1V7A3,3,0,0,1,19,10ZM8,2V7A1,1,0,0,0,9,8H19a1,1,0,0,0,1-1V2Z"/><path class="cls-1" d="M21,32H7a1,1,0,0,1-1-1V21a3,3,0,0,1,3-3H19a3,3,0,0,1,3,3V31A1,1,0,0,1,21,32ZM8,30H20V21a1,1,0,0,0-1-1H9a1,1,0,0,0-1,1Z"/><path class="cls-2" d="M17,6H16a1,1,0,0,1,0-2h1a1,1,0,0,1,0,2Z"/><path class="cls-2" d="M17,24H11a1,1,0,0,1,0-2h6a1,1,0,0,1,0,2Z"/><path class="cls-2" d="M17,28H11a1,1,0,0,1,0-2h6a1,1,0,0,1,0,2Z"/></g>
             </svg>
         </div>
     </div>
 
-    <img src="info/imgs/user.png" alt="User Image" class="user-image" id="userImage">
+    <img src="<%=request.getContextPath()%>/info/imgs/user.png" alt="User Image" class="user-image" id="userImage">
 </div>
-<script src="info/script.js"></script>
+
+<%
+    String a = request.getParameter("addSucc");
+    if ("true".equals(a)) { // Ασφαλές null-safe check
+%>
+<div class="verify" id="verify">
+    <img src="<%=request.getContextPath()%>/info/imgs/verified.gif" alt="Image">
+</div>
+<%
+    }
+%>
+
+<script src="<%=request.getContextPath()%>/info/script.js"></script>
 </body>
 </html>
