@@ -55,10 +55,10 @@ public class Patient extends com.data.Users {
     public String getSalt(){return salt;}
     public void setSalt(String salt){
         try {
-        this.salt = salt;
-    }catch(Exception e){
-        System.out.println(e.getMessage());
-    }}
+            this.salt = salt;
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }}
     public String getHash(){return hash;}
     public void setHash(String hash){
         try {
@@ -113,4 +113,3 @@ public class Patient extends com.data.Users {
         return String.format("Patient ID: %d, Name: %s, Surname: %s, AMKA: %d", id, name, surname, AMKA);
     }
 }
-

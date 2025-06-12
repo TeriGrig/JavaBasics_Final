@@ -142,4 +142,3 @@ public class Appointment {
         return doc_info;
     }
 }
-

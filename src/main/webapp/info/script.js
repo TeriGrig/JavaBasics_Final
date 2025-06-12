@@ -64,3 +64,25 @@ function closeApp(){
     inside.style.setProperty('top', '0');
     userImage.style.setProperty('top', '15%');
 }
+
+function showOptions() {
+    const selection = document.getElementById("property").value;
+    const patientOptions = document.getElementById("patient-options");
+    const doctorOptions = document.getElementById("doctor-options");
+
+    // Hide both initially
+    patientOptions.classList.add("hidden");
+    doctorOptions.classList.add("hidden");
+
+    // Show based on selection
+    if (selection === "Doctor") {
+        doctorOptions.classList.remove("hidden");
+    } else if (selection === "Patient") {
+        patientOptions.classList.remove("hidden");
+    }
+}
+
+// Optional: hide both fields on page load
+window.onload = function() {
+    showOptions();
+};
