@@ -2,11 +2,9 @@ package com.data;
 
 import java.io.PrintWriter;
 import java.sql.*;
-
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -14,10 +12,6 @@ import java.util.ArrayList;
 public class Configuration extends HttpServlet{
 
     private static final long serialVersionUID = 1L;
-
-    private final String DB_URL = "jdbc:mysql://localhost:3306/Hospital?useSSL=false&serverTimezone=UTC";
-    private final String DB_USER = "root";
-    private final String DB_PASS = "sqltest";
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -42,7 +36,9 @@ public class Configuration extends HttpServlet{
                 String saltBase = (String) session.getAttribute("salt");
                 String table = (String) session.getAttribute("table");
 
-                try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);) {
+                try (Connection conn = DBConnection.getConnection();) {
+                    System.out.println("Connected as user: " + conn.getMetaData().getUserName());
+
                     PasswordUtils passwordUtils = new PasswordUtils();
                     String hashedInput = passwordUtils.hashPassword(Integer.parseInt(password), saltBase);
 
@@ -86,8 +82,7 @@ public class Configuration extends HttpServlet{
                                 Appointment a = new Appointment(
                                         rs2.getInt("doctor_id"),
                                         rs2.getInt("patient_id"),
-                                        rs2.getString("date").charAt(0),
-                                        rs2.getString("time")
+                                        rs2.getString("date").charAt(0)
                                 );
                                 appointments.add(a);
                             }
@@ -105,6 +100,7 @@ public class Configuration extends HttpServlet{
                             ResultSet rs1 = stmt1.executeQuery();
                             while (rs1.next()) {
                                 Users user = new Users(
+                                        rs1.getInt("id"),
                                         rs1.getString("name"),
                                         rs1.getString("surname"),
                                         "Doctor"
@@ -117,12 +113,13 @@ public class Configuration extends HttpServlet{
                             String sql2 = "SELECT * FROM patients";
                             PreparedStatement stmt2 = conn.prepareStatement(sql2);
                             ResultSet rs2 = stmt2.executeQuery();
-                            while (rs2.next()) {
-                                Users user = new Users(
-                                        rs2.getString("name"),
-                                        rs2.getString("surname"),
-                                        "Patient"
-                                );
+                                while (rs2.next()) {
+                                    Users user = new Users(
+                                            rs2.getInt("id"),
+                                            rs2.getString("name"),
+                                            rs2.getString("surname"),
+                                            "Patient"
+                                    );
                                 users.add(user);
                             }
                             session.setAttribute("users", users);

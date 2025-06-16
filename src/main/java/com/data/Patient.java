@@ -3,16 +3,18 @@ package com.data;
 import java.sql.*;
 
 public class Patient extends com.data.Users {
-    int AMKA, id;
+    int AMKA;
     String salt, hash;
 
-    String baseURL = "jdbc:mysql://localhost:3306/";
-    String dbName = "hospital";
-    String dbuser = "root";
-    String dbpassword = "sqltest";
-    String fullURL = baseURL + dbName + "?serverTimezone=UTC";
+//    String baseURL = "jdbc:mysql://localhost:3306/";
+//    String dbName = "hospital";
+//    String dbuser = "root";
+//    String dbpassword = "sqltest";
+//    String fullURL = baseURL + dbName + "?serverTimezone=UTC";
 
-    public Patient(){};
+    public Patient(){}
+
+    public Patient(String username){this.username=username;}
 
 //    public Patient(String username, int password, String name, String surname, int AMKA){
 //        super(username, password, name, surname);
@@ -22,7 +24,8 @@ public class Patient extends com.data.Users {
     public Patient(int id, String username, int password, String name, String surname, int AMKA){
         super(username, password, name, surname);
         setAMKA(AMKA);
-        this.id = id;
+        setUsername(username);
+        this.setId(id);
     }
 
     public Patient(String username, int password, String name, String surname, int AMKA, String salt, String hash){
@@ -30,15 +33,6 @@ public class Patient extends com.data.Users {
         setAMKA(AMKA);
         setSalt(salt);
         setHash(hash);
-    }
-
-    public int getId() {return id;}
-    public void setId(int id) {
-        try {
-            this.id = id;
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
     }
 
     public int getAMKA() {
@@ -76,7 +70,7 @@ public class Patient extends com.data.Users {
     public void cancelAppointment(){}
 
     public void insertIndb(){
-        try(Connection conn = DriverManager.getConnection(fullURL, dbuser, dbpassword)) {
+        try(Connection conn = DBConnection.getConnection();) {
             String insertPat = "INSERT INTO patients (username, password, name, surname, AMKA, salt, hash) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(insertPat);
             pstmt.setString(1, this.username);
@@ -95,8 +89,8 @@ public class Patient extends com.data.Users {
         }
     }
 
-    public void deleteFromdb(String dbName){
-        try(Connection conn = DriverManager.getConnection(fullURL, dbuser, dbpassword);
+    public void deleteFromdb(){
+        try(Connection conn = DBConnection.getConnection();
             Statement stmt = conn.createStatement()) {
             String deleteApp = "DELETE FROM patients WHERE `username` = " + this.username;
             stmt.executeUpdate(deleteApp);

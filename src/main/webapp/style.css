@@ -112,7 +112,7 @@ body{
     width: var(--buttonImg);
 }
 
-.but:hover{
+.but:hover, .but:focus{
     background-color: var(--buttonHover);
 }
 

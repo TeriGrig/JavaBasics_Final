@@ -9,11 +9,11 @@ public class Admin extends Users{
     String salt, hash;
     public ArrayList<Doctor> Doctors = new ArrayList<>();
 
-    String dbName = "Hospital";
-    String dbuser = "root";
-    String dbpassword = "sqltest";
-    String baseURL = "jdbc:mysql://localhost:3306/";
-    String fullURL = baseURL + dbName + "?serverTimezone=UTC";
+//    String dbName = "Hospital";
+//    String dbuser = "root";
+//    String dbpassword = "sqltest";
+//    String baseURL = "jdbc:mysql://localhost:3306/";
+//    String fullURL = baseURL + dbName + "?serverTimezone=UTC";
 
     public Admin() {}
 
@@ -49,7 +49,7 @@ public class Admin extends Users{
     }
 
     public void insertIndb(){
-        try(Connection conn = DriverManager.getConnection(fullURL, dbuser, dbpassword)) {
+        try(Connection conn = DBConnection.getConnection();) {
             String insertPat = "INSERT INTO admins (username, password, name, surname, salt, hash) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(insertPat);
             pstmt.setString(1, this.username);
@@ -68,7 +68,7 @@ public class Admin extends Users{
     }
 
     public void deleteFromdb(String dbName){
-        try(Connection conn = DriverManager.getConnection(fullURL, dbuser, dbpassword);
+        try(Connection conn = DBConnection.getConnection();
             Statement stmt = conn.createStatement()) {
             String deleteApp = "DELETE FROM admins WHERE `username` = " + this.username;
             stmt.executeUpdate(deleteApp);
@@ -87,8 +87,12 @@ public class Admin extends Users{
         return doctor;
     }
 
-    public void DeleteDoctor(Doctor d) {
+    public static void DeleteDoctor(Doctor d) {
         d.deleteFromdb();
+    }
+
+    public static void DeletePatient(Patient p) {
+        p.deleteFromdb();
     }
 
     public Doctor getDoctor(ArrayList<Doctor> doctors){

@@ -4,8 +4,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.data.Users" %>
 <%@ page import="com.data.Appointment" %>
+<%@ page import="java.time.LocalDate" %>
+<%@ page import="java.time.format.TextStyle" %>
+<%@ page import="java.util.Locale" %>
 
 <%
+    LocalDate today = LocalDate.now();
+    String month = today.getMonth().getDisplayName(TextStyle.FULL, new Locale("el", "GR"));
     String category = null;
     String username = null;
     String surname = null;
@@ -54,7 +59,7 @@
     <link rel="stylesheet" href="<%=request.getContextPath()%>/info/style.css">
     <title>List</title>
 </head>
-<body>
+<body data-category="<%=category%>">
 <div class="box">
     <form method="POST" action="logout" id="logout">
         <% if (category.equals("doctors")) {%>
@@ -116,28 +121,18 @@
         <%if (category.equals("doctors") || category.equals("patients")) {%>
             <div class="menu">
                 <div class="titleMenu">
-                    <h1>Patient</h1>
+                    <h1><%if("doctors".equals(category)){%> Patient <% } else { %> Doctor <%}%></h1>
                     <h1>Date</h1>
-                    <h1>Time</h1>
                 </div>
                 <div class="menuDetails">
-                    <%for (Appointment ap : appointments) {%>
-                    <div class="details" tabindex="-1">
-                        <%if (category.equals("patients")) {%>
-                            <h2><%=ap.getPatinfo()%></h2>
-                        <%}%>
-                        <%if (category.equals("doctors")) {%>
-                        <h2><%=ap.getDocinfo()%></h2>
-                        <%}%>
-                        <h2><%=ap.getDay()%></h2>
-                        <h2><%=ap.getTime()%></h2>
-                    </div>
-                    <%}%>
+<%--                    <div class="details" tabindex="-1">--%>
+<%--                            <h2>--NAME--</h2>--%>
+<%--                        <h2>--DAY--</h2>--%>
+<%--                    </div>--%>
                 </div>
             </div>
-        <%}%>
-        <%if (category.equals("admins")) {%>
-            <div class="menuAdmin">
+        <%}if (category.equals("admins")) {%>
+            <div class="menu">
                 <div class="titleMenu">
                     <h1>User</h1>
                     <h1>Role</h1>
@@ -145,6 +140,8 @@
                 <div class="menuDetails">
                     <%for (Users u : users) {%>
                     <div class="details" tabindex="-1">
+                        <input type="hidden" name="id" value="<%=u.getId()%>">
+                        <input type="hidden" name="category" value="<%=u.getRole()%>">
                         <h3><%=u.getFullName()%></h3>
                         <h3><%=u.getRole()%></h3>
                     </div>
@@ -157,7 +154,7 @@
             <svg onclick="closeApp()" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM13.92 16.13H9C8.59 16.13 8.25 15.79 8.25 15.38C8.25 14.97 8.59 14.63 9 14.63H13.92C15.2 14.63 16.25 13.59 16.25 12.3C16.25 11.01 15.21 9.97 13.92 9.97H8.85L9.11 10.23C9.4 10.53 9.4 11 9.1 11.3C8.95 11.45 8.76 11.52 8.57 11.52C8.38 11.52 8.19 11.45 8.04 11.3L6.47 9.72C6.18 9.43 6.18 8.95 6.47 8.66L8.04 7.09C8.33 6.8 8.81 6.8 9.1 7.09C9.39 7.38 9.39 7.86 9.1 8.15L8.77 8.48H13.92C16.03 8.48 17.75 10.2 17.75 12.31C17.75 14.42 16.03 16.13 13.92 16.13Z" fill="#292D32"/>
             </svg>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 430 430"><path fill="#c71f16" d="m334.47 82.81-2 38.89-1.15 22.8-12.1 237.13a10 10 0 0 1-3.104 6.743 10 10 0 0 1-6.896 2.747H120.76a10 10 0 0 1-10-9.49L98.68 144.5l-1.17-22.8-2-38.89a2 2 0 0 1 2-2h234.96a2 2 0 0 1 2 2"/><path stroke="#ebe6ef" stroke-linecap="round" stroke-linejoin="round" stroke-width="10" d="M156.46 172.689v155.91m58.67-155.91v155.91m58.41-155.91v155.91"/><path stroke="#c71f16" stroke-linecap="round" stroke-linejoin="round" stroke-width="10" d="M259.16 79.7c0-24.26-22.56-41.85-43.75-41.85a45 45 0 0 0-44.57 38.74v5.84h88.32z"/><path fill="#c71f16" d="M342.71 75.8H87.3c-5.523 0-10 4.477-10 10v25.9c0 5.523 4.477 10 10 10h255.41c5.523 0 10-4.477 10-10V85.8c0-5.523-4.477-10-10-10"/><path fill="#c71f16" d="m332.49 121.699-1.17 22.83H98.68l-1.17-22.83z" opacity=".6" style="mix-blend-mode:multiply"/>
+            <svg onclick="Delete()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 430 430"><path fill="#c71f16" d="m334.47 82.81-2 38.89-1.15 22.8-12.1 237.13a10 10 0 0 1-3.104 6.743 10 10 0 0 1-6.896 2.747H120.76a10 10 0 0 1-10-9.49L98.68 144.5l-1.17-22.8-2-38.89a2 2 0 0 1 2-2h234.96a2 2 0 0 1 2 2"/><path stroke="#ebe6ef" stroke-linecap="round" stroke-linejoin="round" stroke-width="10" d="M156.46 172.689v155.91m58.67-155.91v155.91m58.41-155.91v155.91"/><path stroke="#c71f16" stroke-linecap="round" stroke-linejoin="round" stroke-width="10" d="M259.16 79.7c0-24.26-22.56-41.85-43.75-41.85a45 45 0 0 0-44.57 38.74v5.84h88.32z"/><path fill="#c71f16" d="M342.71 75.8H87.3c-5.523 0-10 4.477-10 10v25.9c0 5.523 4.477 10 10 10h255.41c5.523 0 10-4.477 10-10V85.8c0-5.523-4.477-10-10-10"/><path fill="#c71f16" d="m332.49 121.699-1.17 22.83H98.68l-1.17-22.83z" opacity=".6" style="mix-blend-mode:multiply"/>
             </svg>
         </div>
     </div>
@@ -168,7 +165,7 @@
             if (category.equals("doctors")) {%>
         <div class="calendar">
             <div class="titleCalendar">
-                <h1>September</h1>
+                <h1><%=month%></h1>
             </div>
             <div class="calendarDay">
                 <%
@@ -180,6 +177,7 @@
                         String dayName = days[dayIndex % 7]; // Επαναφορά μετά την Κυριακή
                 %>
                 <div class="day">
+                    <input type="hidden" name="day" value="<%= dayNumber %>">
                     <h2><%=dayName%> </h2>
                     <h3> <%=dayNumber%> </h3>
                 </div>
@@ -272,24 +270,31 @@
                     <option value="surgeon">Surgeon</option>
                     <option value="ophthalmologist">Opthalmologist</option>
                 </select>
-                <label for="day">Day</label>
-                <select name="day" id="day">
-                    <option value="">-- Ημέρα --</option>
-                    <% int dayNumber = 1;
-                        while (dayNumber <= 31) {%>
-                    <option value="01"><%=dayNumber%></option>
-                    <% dayNumber++;
-                    }%>
-                </select>
-                <label for="hour">Time</label>
-                <select name="hour" id="hour">
-                    <option value="">-- Ώρα --</option>
-                    <% int hour = 9;
-                        while (hour <= 18) {%>
-                    <option value="09:00"><%=hour%>:00</option>
-                    <% hour++;
-                    }%>
-                </select>
+<%--                --%>
+                <div class="calendar" id="calendar">
+                    <div class="titleCalendar">
+                        <h1><%=month%></h1>
+                    </div>
+                    <div class="calendarDay">
+                        <%
+                            String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+                            int dayNumber = 1;
+                            int dayIndex = 0;
+
+                            while (dayNumber <= 31) {
+                                String dayName = days[dayIndex % 7]; // Επαναφορά μετά την Κυριακή
+                        %>
+                        <div class="day">
+                            <input type="hidden" name="day" value="<%= dayNumber %>">
+                            <h2><%=dayName%> </h2>
+                            <h3> <%=dayNumber%> </h3>
+                        </div>
+                        <%
+                                dayNumber++;
+                                dayIndex++;
+                            }%>
+                    </div></div>
+<%--                --%>
             </div>
         </div>
         <% } %>
@@ -297,7 +302,7 @@
             <svg onclick="closeAdd()" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM13.92 16.13H9C8.59 16.13 8.25 15.79 8.25 15.38C8.25 14.97 8.59 14.63 9 14.63H13.92C15.2 14.63 16.25 13.59 16.25 12.3C16.25 11.01 15.21 9.97 13.92 9.97H8.85L9.11 10.23C9.4 10.53 9.4 11 9.1 11.3C8.95 11.45 8.76 11.52 8.57 11.52C8.38 11.52 8.19 11.45 8.04 11.3L6.47 9.72C6.18 9.43 6.18 8.95 6.47 8.66L8.04 7.09C8.33 6.8 8.81 6.8 9.1 7.09C9.39 7.38 9.39 7.86 9.1 8.15L8.77 8.48H13.92C16.03 8.48 17.75 10.2 17.75 12.31C17.75 14.42 16.03 16.13 13.92 16.13Z" fill="#292D32"/>
             </svg>
-            <svg onclick="document.getElementById('addUser').submit()" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#04009a;}.cls-2{fill:#77acf1;}</style></defs><g data-name="13. Floppy Disk" id="_13._Floppy_Disk"><path class="cls-1" d="M27,32H25a1,1,0,0,1,0-2h2a1,1,0,0,0,1-1V7.829a1,1,0,0,0-.293-.708L22.879,2.293A1.009,1.009,0,0,0,22.172,2H5A1,1,0,0,0,4,3V14a1,1,0,0,1-2,0V3A3,3,0,0,1,5,0H22.172a2.978,2.978,0,0,1,2.121.879l4.828,4.828A2.983,2.983,0,0,1,30,7.829V29A3,3,0,0,1,27,32Z"/><path class="cls-1" d="M21,32H5a3,3,0,0,1-3-3V18a1,1,0,0,1,2,0V29a1,1,0,0,0,1,1H21a1,1,0,0,1,0,2Z"/><path class="cls-1" d="M19,10H9A3,3,0,0,1,6,7V1A1,1,0,0,1,7,0H21a1,1,0,0,1,1,1V7A3,3,0,0,1,19,10ZM8,2V7A1,1,0,0,0,9,8H19a1,1,0,0,0,1-1V2Z"/><path class="cls-1" d="M21,32H7a1,1,0,0,1-1-1V21a3,3,0,0,1,3-3H19a3,3,0,0,1,3,3V31A1,1,0,0,1,21,32ZM8,30H20V21a1,1,0,0,0-1-1H9a1,1,0,0,0-1,1Z"/><path class="cls-2" d="M17,6H16a1,1,0,0,1,0-2h1a1,1,0,0,1,0,2Z"/><path class="cls-2" d="M17,24H11a1,1,0,0,1,0-2h6a1,1,0,0,1,0,2Z"/><path class="cls-2" d="M17,28H11a1,1,0,0,1,0-2h6a1,1,0,0,1,0,2Z"/></g>
+            <svg onclick="Save()" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#04009a;}.cls-2{fill:#77acf1;}</style></defs><g data-name="13. Floppy Disk" id="_13._Floppy_Disk"><path class="cls-1" d="M27,32H25a1,1,0,0,1,0-2h2a1,1,0,0,0,1-1V7.829a1,1,0,0,0-.293-.708L22.879,2.293A1.009,1.009,0,0,0,22.172,2H5A1,1,0,0,0,4,3V14a1,1,0,0,1-2,0V3A3,3,0,0,1,5,0H22.172a2.978,2.978,0,0,1,2.121.879l4.828,4.828A2.983,2.983,0,0,1,30,7.829V29A3,3,0,0,1,27,32Z"/><path class="cls-1" d="M21,32H5a3,3,0,0,1-3-3V18a1,1,0,0,1,2,0V29a1,1,0,0,0,1,1H21a1,1,0,0,1,0,2Z"/><path class="cls-1" d="M19,10H9A3,3,0,0,1,6,7V1A1,1,0,0,1,7,0H21a1,1,0,0,1,1,1V7A3,3,0,0,1,19,10ZM8,2V7A1,1,0,0,0,9,8H19a1,1,0,0,0,1-1V2Z"/><path class="cls-1" d="M21,32H7a1,1,0,0,1-1-1V21a3,3,0,0,1,3-3H19a3,3,0,0,1,3,3V31A1,1,0,0,1,21,32ZM8,30H20V21a1,1,0,0,0-1-1H9a1,1,0,0,0-1,1Z"/><path class="cls-2" d="M17,6H16a1,1,0,0,1,0-2h1a1,1,0,0,1,0,2Z"/><path class="cls-2" d="M17,24H11a1,1,0,0,1,0-2h6a1,1,0,0,1,0,2Z"/><path class="cls-2" d="M17,28H11a1,1,0,0,1,0-2h6a1,1,0,0,1,0,2Z"/></g>
             </svg>
         </div>
     </div>
@@ -315,7 +320,6 @@
 <%
     }
 %>
-
 <script src="<%=request.getContextPath()%>/info/script.js"></script>
 </body>
 </html>

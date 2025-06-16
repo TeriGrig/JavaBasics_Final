@@ -16,15 +16,15 @@
         <div class="inps">
             <div class="in">
                 <img src="imgs/user.svg" alt="">
-                <input type="text" name="username" id="">
+                <input type="text" name="username" tabindex="1">
             </div>
             <div class="in">
                 <img src="imgs/password.svg" alt="">
-                <input type="password" name="password" id="">
+                <input type="password" name="password" tabindex="2">
                 <img src="imgs/eye.svg" alt="" class="eye">
             </div>
-            <div class="but">
-                <h1 onclick="document.getElementById('loginForm').submit()">Log In</h1>
+            <div class="but" tabindex="3" id="sub" onclick="document.getElementById('loginForm').submit()">
+                <h1>Log In</h1>
                 <img src="imgs/login.svg" alt="">
             </div>
         </div>
@@ -36,5 +36,12 @@
         <img src="imgs/sec.png" alt="">
     </div>
 </div>
+<script>
+    document.getElementById("sub").addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            document.getElementById("sub").click();
+        }
+    });
+</script>
 </body>
 </html>

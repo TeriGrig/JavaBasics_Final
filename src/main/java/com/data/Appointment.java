@@ -5,20 +5,18 @@ import java.util.ArrayList;
 public class Appointment {
     int doctor_id;
     int patient_id;
-    char date;
-    String time;
+    int date;
 
-    String baseURL = "jdbc:mysql://localhost:3306/";
-    String dbName = "hospital";
-    String dbuser = "root";
-    String dbpassword = "sqltest";
-    String fullURL = baseURL + dbName + "?serverTimezone=UTC";
+//    String baseURL = "jdbc:mysql://localhost:3306/";
+//    String dbName = "hospital";
+//    String dbuser = "root";
+//    String dbpassword = "sqltest";
+//    String fullURL = baseURL + dbName + "?serverTimezone=UTC";
 
-    public Appointment (int doctor_id, int patient_id, char date, String time) {
-        this.doctor_id = doctor_id;
+    public Appointment (int doctor_id, int patient_id, int date) {
+        this.doctor_id =doctor_id;
         this.patient_id = patient_id;
         this.date = date;
-        this.time = time;
     }
 
     public int getDoctor_id() {return doctor_id;}
@@ -37,31 +35,22 @@ public class Appointment {
         }catch(Exception e){}
     }
 
-    public char getDate() {return date;}
-    public void setDate(char date) {
+    public int getDate() {return date;}
+    public void setDate(int date) {
         try {
             this.date = date;
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
     }
-    public String getTime() {return time;}
-    public void setTime(String time) {
-        try {
-            this.time = time;
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-        }
-    }
 
     public void insertIndb(){
-        try(Connection conn = DriverManager.getConnection(fullURL, dbuser, dbpassword)) {
-            String insertApp = "INSERT INTO appointments (patient_id, doctor_id, date, time) VALUES (?, ?, ?, ?)";
+        try(Connection conn = DBConnection.getConnection();) {
+            String insertApp = "INSERT INTO appointments (patient_id, doctor_id, date) VALUES (?, ?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(insertApp);
             pstmt.setInt(1, patient_id);
             pstmt.setInt(2, doctor_id);
-            pstmt.setString(3, String.valueOf(date));
-            pstmt.setString(4, time);
+            pstmt.setInt(3, date);
             pstmt.executeUpdate();
             System.out.println("Appointment inserted.");
             pstmt.close();
@@ -72,16 +61,25 @@ public class Appointment {
     }
 
     public void deleteFromdb(){
-        try(Connection conn = DriverManager.getConnection(fullURL, dbuser, dbpassword);
-            Statement stmt = conn.createStatement()) {
-            String deleteApp = "DELETE FROM appointments WHERE date = " + this.date + " and time = " + this.time;
-            stmt.executeUpdate(deleteApp);
-            System.out.println("Appointment deleted.");
-            stmt.close();
-            conn.close();
-        }catch(Exception e){
+        String deleteApp = "DELETE FROM appointments WHERE date = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(deleteApp)) {
+
+            pstmt.setInt(1, date);
+
+            int rows = pstmt.executeUpdate();
+
+            if (rows > 0) {
+                System.out.println("Appointment deleted.");
+            } else {
+                System.out.println("No appointment found to delete.");
+            }
+
+        } catch (Exception e) {
             System.out.println("Error working with table: " + e.getMessage());
         }
+
     }
 
     @Override
@@ -103,28 +101,7 @@ public class Appointment {
                 pat_info = p.surname + " " + p.name;
             }
         }
-        String day = getDay();
-        return String.format("Appointment details: Doctor: %s, Patient: %s, Date: %s, Time: %s", doc_info, pat_info, day, time);
-    }
-
-    public String getDay(){
-        String day = null;
-        if (date == 'M'){
-            day = "Monday";
-        }else if (date == 'T'){
-            day = "Tuesday";
-        }else if (date == 'W'){
-            day = "Wednesday";
-        }else if (date == 'R'){
-            day = "Thursday";
-        }else if (date == 'F'){
-            day = "Friday";
-        }else if (date == 'S'){
-            day = "Saturday";
-        }else if (date == 'N'){
-            day = "Sunday";
-        }
-        return day;
+        return String.format("Appointment details: Doctor: %s, Patient: %s, Date: %s", doc_info, pat_info);
     }
 
     public String getDocinfo(){

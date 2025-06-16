@@ -13,13 +13,13 @@ public class CreateUsers {
         int password = 0;
         char type;
 
-        String baseURL = "jdbc:mysql://localhost:3306/";
-        String dbName = "hospital";
-        String dbuser = "root";
-        String dbpassword = "sqltest";
-        String fullURL = baseURL + dbName + "?serverTimezone=UTC";
+//        String baseURL = "jdbc:mysql://localhost:3306/";
+//        String dbName = "hospital";
+//        String dbuser = "root";
+//        String dbpassword = "sqltest";
+//        String fullURL = baseURL + dbName + "?serverTimezone=UTC";
 
-        try (Connection conn = getConnection(fullURL, dbuser, dbpassword)) {
+        try (Connection conn = DBConnection.getConnection();) {
             Admin a = null;
             Users u = new Users();
             Doctor d = null;
@@ -255,7 +255,7 @@ public class CreateUsers {
                                             }while ((date != 'M') && (date != 'T') && (date != 'W') && (date != 'R') && (date != 'F') && (date != 'S') && (date != 'N'));
                                             System.out.println("Enter the time in the format HH:MM");
                                             String time = (new Scanner(System.in)).next();
-                                            Appointment app = new Appointment(doc.id, p.id, date, time);
+                                            Appointment app = new Appointment(doc.id, p.id, date);
                                             app.insertIndb();
                                             System.out.println(app.toString());
                                         } else {
@@ -270,8 +270,7 @@ public class CreateUsers {
                                             Appointment app1 = new Appointment(
                                                     appointments.get(i).getDoctor_id(),
                                                     appointments.get(i).getPatient_id(),
-                                                    appointments.get(i).getDate(),
-                                                    appointments.get(i).getTime()
+                                                    appointments.get(i).getDate()
                                             );
                                             System.out.println(app1.toString());
                                         }

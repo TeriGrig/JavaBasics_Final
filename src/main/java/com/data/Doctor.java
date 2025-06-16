@@ -1,17 +1,17 @@
 package com.data;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class Doctor extends com.data.Users {
     public String speciality;
-    public int id;
     String salt, hash;
 
-    String baseURL = "jdbc:mysql://localhost:3306/";
-    String dbName = "hospital";
-    String dbuser = "root";
-    String dbpassword = "sqltest";
-    String fullURL = baseURL + dbName + "?serverTimezone=UTC";
+//    String baseURL = "jdbc:mysql://localhost:3306/";
+//    String dbName = "hospital";
+//    String dbuser = "root";
+//    String dbpassword = "sqltest";
+//    String fullURL = baseURL + dbName + "?serverTimezone=UTC";
 
     public Doctor(){};
 
@@ -20,9 +20,11 @@ public class Doctor extends com.data.Users {
 //        this.speciality = speciality;
 //    }
 
+    public Doctor(String username) {this.username =  username;}
+
     public Doctor(int id, String username, int password, String name, String surname, String speciality) {
         super(username, password, name, surname);
-        this.id = id;
+        this.setId(id);
         this.speciality = speciality;
     }
 
@@ -44,14 +46,6 @@ public class Doctor extends com.data.Users {
         }
     }
 
-    public int getId() {return id;}
-    public void setId(int id) {
-        try {
-            this.id = id;
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-    }
     public String getSalt(){return salt;}
     public void setSalt(String salt){
         try {
@@ -75,7 +69,7 @@ public class Doctor extends com.data.Users {
     public void cancelAppointment(){}
 
     public void insertIndb(){
-        try(Connection conn = DriverManager.getConnection(fullURL, dbuser, dbpassword)) {
+        try(Connection conn = DBConnection.getConnection();) {
             String insertDoc = "INSERT INTO doctors (username, password, name, surname, speciality, salt, hash) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(insertDoc);
             pstmt.setString(1, this.username);
@@ -95,7 +89,7 @@ public class Doctor extends com.data.Users {
     }
 
     public void deleteFromdb(){
-        try(Connection conn = DriverManager.getConnection(fullURL, dbuser, dbpassword);) {
+        try(Connection conn = DBConnection.getConnection();) {
             String deleteApp = "DELETE FROM doctors WHERE username = ?";
             PreparedStatement pstmt = conn.prepareStatement(deleteApp);
             pstmt.setString(1, this.username);

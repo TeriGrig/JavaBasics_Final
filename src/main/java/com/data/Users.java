@@ -8,22 +8,23 @@ import static java.lang.System.out;
 
 public class Users {
     String username, name, surname, role;
-    int password, usersCounter;
+    int id, password, usersCounter;
 
-    String dbName = "hospital";
-    String dbuser = "root";
-    String dbpassword = "sqltest";
-    String baseURL = "jdbc:mysql://localhost:3306/";
-    String fullURL = baseURL + dbName + "?serverTimezone=UTC";
+//    String dbName = "hospital";
+//    String dbuser = "root";
+//    String dbpassword = "sqltest";
+//    String baseURL = "jdbc:mysql://localhost:3306/";
+//    String fullURL = baseURL + dbName + "?serverTimezone=UTC";
 
     String[] tables = new String[]{"admins", "doctors", "patients"};
 
     public Users(){}
 
-    public Users(String name, String surname, String role){
+    public Users(int id, String name, String surname, String role){
         setName(name);
         setSurname(surname);
         setRole(role);
+        setId(id);
     }
 
     public Users(String username, int password, String name, String surname) {
@@ -35,12 +36,21 @@ public class Users {
 
     public String getUsername() {return username;}
     public int getPassword() {return password;}
+    public int getId(){return id;}
     public String getName() {return name;}
     public String getSurname() {return surname;}
     public String getRole() {return role;}
     public String getFullName() {
         String fullname = getSurname() + " " + getName();
         return fullname;
+    }
+
+    public void setId(int id) {
+        try{
+            this.id = id;
+        }catch (Exception e){
+            out.println(e.getMessage());
+        }
     }
 
     public void setUsername(String username) {
@@ -84,7 +94,7 @@ public class Users {
         try {
             // JDBC σύνδεση
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn = DriverManager.getConnection(fullURL, dbuser, dbpassword);
+            Connection conn = DBConnection.getConnection();
             String storedHash = null;
             String saltBase = null;
             String table = null;
@@ -124,7 +134,7 @@ public class Users {
         ArrayList<Admin> admins = new ArrayList<>();
         Admin a = null;
         ResultSet rs = null;
-        try(Connection conn = DriverManager.getConnection(fullURL, dbuser, dbpassword)){
+        try(Connection conn = DBConnection.getConnection();){
             String selectQuery = text;
             PreparedStatement pstm = conn.prepareStatement(selectQuery);
             rs = pstm.executeQuery();
@@ -151,7 +161,7 @@ public class Users {
         ArrayList<Patient> patients = new ArrayList<>();
         Patient p = null;
         ResultSet rs = null;
-        try(Connection conn = DriverManager.getConnection(fullURL, dbuser, dbpassword)){
+        try(Connection conn = DBConnection.getConnection();){
             String selectQuery = text;
             PreparedStatement pstm = conn.prepareStatement(selectQuery);
             rs = pstm.executeQuery();
@@ -179,7 +189,7 @@ public class Users {
         ArrayList<Doctor> docs = new ArrayList<>();
         Doctor d = null;
         ResultSet rs = null;
-        try(Connection conn = DriverManager.getConnection(fullURL, dbuser, dbpassword)){
+        try(Connection conn = DBConnection.getConnection();){
             String selectQuery = text;
             PreparedStatement pstm = conn.prepareStatement(selectQuery);
             rs = pstm.executeQuery();
@@ -207,7 +217,7 @@ public class Users {
         ArrayList<Appointment> appointments = new ArrayList<>();
         Appointment a = null;
         ResultSet rs = null;
-        try (Connection conn = DriverManager.getConnection(fullURL, dbuser, dbpassword)){
+        try (Connection conn = DBConnection.getConnection();){
             String selectQuery = text;
             PreparedStatement ptsm = conn.prepareStatement(selectQuery);
             rs = ptsm.executeQuery();
@@ -215,8 +225,7 @@ public class Users {
                 a = new Appointment(
                         rs.getInt(1),
                         rs.getInt(2),
-                        rs.getString(3).charAt(0),
-                        rs.getString(4)
+                        rs.getString(3).charAt(0)
                 );
                 appointments.add(a);
             }
