@@ -214,7 +214,7 @@ body{
 }
 .titleMenu, .details{
     display: grid;
-    grid-template-columns: 70% 1fr;
+    grid-template-columns: 50% 1fr;
     text-align: center;
     opacity: 0;
     transform: translateY(30px);

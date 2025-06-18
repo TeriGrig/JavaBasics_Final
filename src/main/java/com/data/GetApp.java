@@ -26,40 +26,84 @@ public class GetApp extends HttpServlet {
         String username = (String) session.getAttribute("username");
         String role = (String) session.getAttribute("table");
         String n = "";
-        if (role == "doctors") {
+        String n2 = "";
+        if ("doctors".equals(role)) {
             n = "patient_username";
-        }else {
+            n2 = "doctor_username";
+        }else if ("patients".equals(role)) {
             n = "doctor_username";
-        }
-        try (Connection conn = DBConnection.getConnection()) {
+            n2 = "patient_username";
+        }else {
+            try {
+                Connection conn = DBConnection.getConnection();
+                String sql = "SELECT id, username, speciality AS role\n" +
+                        "FROM doctors\n" +
+                        "UNION ALL\n" +
+                        "SELECT id, username, 'patient' AS role\n" +
+                        "FROM patients;";
 
-            String sql = "select "+ n +", day, active from appointments0 where patient_username = '" + username + "'";
+                try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ResultSet rs = ps.executeQuery();
+                    StringBuilder jsonArr = new StringBuilder();
+                    jsonArr.append("[");
 
-            try (PreparedStatement ps = conn.prepareStatement(sql);
-                 ResultSet rs = ps.executeQuery()) {
+                    boolean first = true;
+                    while (rs.next()) {
+                        if (!first) jsonArr.append(",");
 
-                StringBuilder jsonArr = new StringBuilder();
-                jsonArr.append("[");
+                        jsonArr.append("{");
+                        jsonArr.append("\"id\":\"").append(rs.getInt("id")).append("\",");
+                        jsonArr.append("\"name\":\"").append(rs.getString("username")).append("\",");
+                        jsonArr.append("\"role\":\"").append(rs.getString("role")).append("\"");
+                        jsonArr.append("}");
 
-                boolean first = true;
-                while (rs.next()) {
-                    if (!first) jsonArr.append(",");
-                    jsonArr.append("{");
-                    jsonArr.append("\"name\":\"").append(rs.getString(n)).append("\",");
-                    jsonArr.append("\"day\":").append(rs.getInt("day")).append(",");
-                    jsonArr.append("\"active\":").append(rs.getBoolean("active"));
-                    jsonArr.append("}");
-                    first = false;
+                        first = false;
+                    }
+
+                    jsonArr.append("]");
+
+                    response.setContentType("application/json");
+                    PrintWriter out = response.getWriter();
+                    out.print(jsonArr.toString());
+                    out.flush();
                 }
-
-                jsonArr.append("]");
-
-                response.setContentType("application/json");
-                PrintWriter out = response.getWriter();
-                out.print(jsonArr.toString());
-                out.flush();
-                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }catch (Exception e){}
+
+        }
+        if (!"admins".equals(role)) {
+            try (Connection conn = DBConnection.getConnection()) {
+                String sql = "select "+ n +", day, active from appointments0 where " + n2 + " = '" + username + "' ORDER BY day ASC";
+
+                try (PreparedStatement ps = conn.prepareStatement(sql);
+                     ResultSet rs = ps.executeQuery()) {
+
+                    StringBuilder jsonArr = new StringBuilder();
+                    jsonArr.append("[");
+
+                    boolean first = true;
+                    while (rs.next()) {
+                        if (!first) jsonArr.append(",");
+                        jsonArr.append("{");
+                        jsonArr.append("\"name\":\"").append(rs.getString(n)).append("\",");
+                        jsonArr.append("\"day\":").append(rs.getInt("day")).append(",");
+                        jsonArr.append("\"active\":").append(rs.getBoolean("active"));
+                        jsonArr.append("}");
+                        first = false;
+                    }
+
+                    jsonArr.append("]");
+
+                    response.setContentType("application/json");
+                    PrintWriter out = response.getWriter();
+                    out.print(jsonArr.toString());
+                    out.flush();
+                    out.close();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
 }

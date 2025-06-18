@@ -14,6 +14,7 @@ let daysArray=[];
 let selDay = null;
 
 const category = document.body.dataset.category;
+const username = document.body.dataset.username;
 
 let count = 0;
 let days = document.querySelectorAll('.day');
@@ -22,7 +23,6 @@ const appointments = document.getElementById('appointments');
 const inside = document.getElementById('inside');
 const userImage = document.getElementById('userImage');
 const add = document.getElementById('add');
-const details = document.querySelectorAll('.details');
 const cal = document.getElementById("calendar");
 const today = new Date();
 const dayNow = today.getDate();
@@ -54,65 +54,74 @@ function closeApp(){
     inside.style.setProperty('top', '0');
     userImage.style.setProperty('top', '15%');
 }
-details.forEach((el, index) => {
-    el.style.animationDelay = `${index * 0.5}s`;
-    el.addEventListener('click', saveEl);
-});
 
 // code
-fetch('/JavaBasic/GetDays')
-    .then(res => res.text())
-    .then(data => {
-        console.log(data);
-        daysArray = JSON.parse(data);
+function getDays(){
+    fetch('/JavaBasic/GetDays')
+        .then(res => res.text())
+        .then(data => {
+            console.log(data);
+            daysArray = JSON.parse(data);
 
-        daysArray = daysArray.map(obj => obj.day);
-        const daysSet = new Set(daysArray);
-        days.forEach(day => {
-            const inputValue = day.querySelector("input").value;
-            if (daysSet.has(Number(inputValue))) {
-                day.style.backgroundColor = 'green';
-                day.style.color = 'white';
-            }
-        });
-    })
-    .catch(error => {
+            daysArray = daysArray.map(obj => obj.day);
+            const daysSet = new Set(daysArray);
+            days.forEach(day => {
+                const inputValue = day.querySelector("input").value;
+                if (daysSet.has(Number(inputValue))) {
+                    day.style.backgroundColor = 'green';
+                    day.style.color = 'white';
+                }
+            });
+        })
+        .catch(error => {
         console.error("Error fetching app:", error);
     });
+}
 
-fetch(window.location.origin + '/JavaBasic/getApp')
-    .then(response => {
-        if (!response.ok) {
-            console.error("HTTP status:", response.status);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log(data);
-        const container = document.querySelector('.menuDetails');
-        container.innerHTML = ''; // καθάρισε προηγούμενα
-
-        data.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'details';
-            div.setAttribute('tabindex', '-1');
-
-            div.innerHTML = `
-                <h2>${item.name}</h2>
-                <h2>${item.day}</h2>
-              `;
-            if (item.day < dayNow){
-                div.style.backgroundColor = "red"
-            }else if (item.day == dayNow){
-                div.style.backgroundColor = "green";
+function app(){
+    fetch(window.location.origin + '/JavaBasic/getApp')
+        .then(response => {
+            if (!response.ok) {
+                console.error("HTTP status:", response.status);
             }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            const container = document.querySelector('.menuDetails');
+            container.innerHTML = ''; // καθάρισε προηγούμενα
 
-        container.appendChild(div);
-        });
-    })
-    .catch(error => {
-        console.error("Τελικό σφάλμα:", error);
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'details';
+                div.setAttribute('tabindex', '-1');
+
+                if (category !== "admins"){
+                    div.innerHTML = `
+                        <h2>${item.name}</h2>
+                        <h2>${item.day}</h2>
+                      `;
+                    if (item.day < dayNow){
+                        div.style.backgroundColor = "red"
+                    }else if (item.day === dayNow){
+                        div.style.backgroundColor = "green";
+                    }
+                }else {
+                    div.innerHTML = `
+                        <input type="hidden" name="id" value="${item.id}">
+                        <input type="hidden" name="category" value="${item.role}">
+                        <h2>${item.name}</h2>
+                        <h2>${item.role}</h2>
+                      `;
+                }
+                div.addEventListener('click', saveEl);
+            container.appendChild(div);
+            });
+        })
+        .catch(error => {
+        console.error("error:", error);
     });
+}
 
 
 days.forEach(day => {
@@ -177,24 +186,50 @@ function saveEl(){
     lastFocus = this;
 }
 function Delete(){
-    let id = lastFocus.querySelectorAll("input")[0];
-    let role = lastFocus.querySelectorAll("input")[1];
-    console.log(id.value + "\n" + role.value);
-    fetch("DeleteUser", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: "id=" + encodeURIComponent(id.value) + "&role=" + encodeURIComponent(role.value)
-    })
-        .then(response => response.text())
-        .then(result => {
-            alert("Delete: " + result);
-            location.reload();
+    if (category === "admins"){
+        let id = lastFocus.querySelectorAll("input")[0];
+        let role = lastFocus.querySelectorAll("input")[1];
+        console.log(id.value + "\n" + role.value);
+        fetch("/JavaBasic/DelApp", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "id=" + encodeURIComponent(id.value) + "&role=" + encodeURIComponent(role.value)
         })
-        .catch(error =>{
-            console.error("error ->" + error)
-        })
+            .then(response => response.text())
+            .then(result => {
+                alert("Delete: " + result);
+                app();
+            })
+            .catch(error =>{
+                console.error("error ->" + error)
+            })
+    }else {
+        const selectDay = parseInt((lastFocus.querySelectorAll("h2")[1]).textContent.trim(), 10)
+        if ((lastFocus.style.backgroundColor === 'transparent' || lastFocus.style.backgroundColor === '') && selectDay >= dayNow + 3){
+            fetch("/JavaBasic/DelApp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "name=" + encodeURIComponent(
+                    category === "doctors"
+                        ? username
+                        : lastFocus.querySelectorAll("h2")[0].textContent.trim()
+                ) + "&date=" + encodeURIComponent(selectDay)
+
+            })
+                .then(response => response.text())
+                .then(result => {
+
+                    app();
+                })
+                .catch(error =>{
+                    console.error("error ->" + error)
+                })
+        }
+    }
 }
 function Save(){
     if (category === "admins"){
@@ -218,7 +253,7 @@ function Save(){
 
     }
     else{
-        if (document.getElementById("doctor-type").value != null){
+        if (document.getElementById("doctor-type").value !== null){
             fetch('SetDates', {
                 method: "POST",
                 headers: {
@@ -227,15 +262,13 @@ function Save(){
                 body: "role=" + encodeURIComponent(document.getElementById("doctor-type").value) + "&day=" + encodeURIComponent(selDay.querySelectorAll("input")[0].value)
             })
                 .then(response => response.text())
-                .then(data => console.log(data),
-                PatientDateClear()
+                .then(data => {
+                    location.reload();
+                },
         )
                 .catch(error => console.log("Error:", error));
         }
-        // document.getElementById("doctor-type").value;
-        // selDay.querySelectorAll("input")[0].value;
     }
-    alert("Ok", "Ok");
 }
 
 function showOptions() {
@@ -255,6 +288,8 @@ function showOptions() {
     }
 }
 window.onload = function() {
+    app();
+    getDays();
     if (category === "admins") {
         showOptions();
     }

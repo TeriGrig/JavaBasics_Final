@@ -17,26 +17,22 @@ public class DeleteUser  extends HttpServlet {
         String id = request.getParameter("id");
         String role = request.getParameter("role");
 
-        response.setContentType("text/plain");
-        response.getWriter().write("Διαγράφηκε το ID: " + id);
-
         try(Connection conn = DBConnection.getConnection();){
-            if ("Doctor".equals(role)) {
-                String deleteApp = "DELETE FROM doctors WHERE id = ?";
-                PreparedStatement pstmt = conn.prepareStatement(deleteApp);
-                pstmt.setInt(1, Integer.parseInt(id));
-                pstmt.executeUpdate();
-                pstmt.close();
+            String deleteApp = "";
+            if (!"patient".equals(role)) {
+                deleteApp = "DELETE FROM doctors WHERE id = ?";
             }
             else {
-                String deleteApp = "DELETE FROM patients WHERE id = ?";
-                PreparedStatement pstmt = conn.prepareStatement(deleteApp);
-                pstmt.setInt(1, Integer.parseInt(id));
-                pstmt.executeUpdate();
-                pstmt.close();
+                deleteApp = "DELETE FROM patients WHERE id = ?";
             }
+            PreparedStatement pstmt = conn.prepareStatement(deleteApp);
+            pstmt.setInt(1, Integer.parseInt(id));
+            pstmt.executeUpdate();
+            pstmt.close();
         }catch(Exception e){
             System.out.println("Error working with table: " + e.getMessage());
         }
+        response.setContentType("text/plain");
+        response.getWriter().write("Delete ID: " + id);
     }
 }
